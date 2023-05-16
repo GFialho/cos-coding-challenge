@@ -6,6 +6,7 @@ import { AuctionMonitorApp } from "./AuctionMonitorApp";
 import * as dotenv from "dotenv";
 import { ICarOnSaleClient } from "./services/CarOnSaleClient/interface/ICarOnSaleClient";
 import { CarOnSaleClient } from "./services/CarOnSaleClient/classes/CarOnSaleClient";
+
 dotenv.config({ path: __dirname + "/.env" });
 
 /*

@@ -17,8 +17,9 @@ export class AuctionMonitorApp {
 
     try {
       // Retrieve auctions
-      const auctions = await this.carOnSaleClient.getRunningAuctions({});
+      const data = await this.carOnSaleClient.getRunningAuctions({});
 
+      const { items: auctions } = data;
       // Display aggregated information
       const numberOfAuctions = auctions.length;
       const averageNumberOfBids = this.calculateAverageNumberOfBids(auctions);
@@ -33,6 +34,7 @@ export class AuctionMonitorApp {
 
       process.exit(0); // Exit with exit code 0 on successful execution
     } catch (error: any) {
+      console.log(error.response.data);
       this.logger.error(`Error: ${error.message}`);
       process.exit(-1); // Exit with exit code -1 if there's an error
     }
