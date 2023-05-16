@@ -74,11 +74,29 @@ export class CarOnSaleClient implements ICarOnSaleClient {
   }
 
   public async getRunningAuctions({ filter }: { filter?: any } = {}) {
-    const response = await this._call({
+    let response = await this._call({
       url: `https://${process.env.API_BASE_URL}/v2/auction/buyer/`,
       method: "get",
-      params: { ...(filter && { filter }) },
+      params: { ...(filter && { filter: JSON.stringify(filter) }) },
     });
+
+    // Get all records using paginated response
+    while (response.items.length < response.total) {
+      const nextPageResponse = await this._call({
+        url: `https://${process.env.API_BASE_URL}/v2/auction/buyer/`,
+        method: "get",
+        params: {
+          ...(filter && {
+            filter: JSON.stringify({
+              ...filter,
+              offset: response.items.length,
+            }),
+          }),
+        },
+      });
+
+      response.items = response.items.concat(nextPageResponse.items);
+    }
 
     return response;
   }

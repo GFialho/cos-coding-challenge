@@ -97,7 +97,7 @@ describe("CarOnSaleClient", () => {
         if (url?.includes("/v1/authentication/"))
           return Promise.resolve({ token: "token-123", userId: "userid-123" });
 
-        // Checking if credentials are set correct
+        // Checking if credentials are set correctly
         expect(headers).to.deep.equal({
           authtoken: "token-123",
           userid: "userid-123",
@@ -159,7 +159,7 @@ describe("CarOnSaleClient", () => {
         if (config?.url?.includes("/v1/authentication/"))
           return Promise.resolve({ token: "token-123", userId: "userid-123" });
 
-        // Checking if credentials are set correct
+        // Checking if credentials are set correctly
         expect(config.headers).to.deep.equal({
           authtoken: "token-123",
           userid: "userid-123",
@@ -185,7 +185,7 @@ describe("CarOnSaleClient", () => {
         if (config?.url?.includes("/v1/authentication/"))
           return Promise.resolve({ token: "token-123", userId: "userid-123" });
 
-        // Checking if credentials are set correct
+        // Checking if credentials are set correctly
         expect(config.headers).to.deep.equal({
           authtoken: "token-123",
           userid: "userid-123",

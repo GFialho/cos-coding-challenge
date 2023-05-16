@@ -22,8 +22,9 @@ export class AuctionMonitorApp {
 
     try {
       // Retrieve auctions
-      const { items: auctions } =
-        await this.carOnSaleClient.getRunningAuctions();
+      const { items: auctions } = await this.carOnSaleClient.getRunningAuctions(
+        { filter: { limit: 50 } }
+      );
 
       // Display aggregated information
       const numberOfAuctions = auctions.length;
@@ -35,6 +36,7 @@ export class AuctionMonitorApp {
         "Calculating average auction progress",
         this._serviceName
       );
+
       const averageAuctionProgress =
         this.calculateAverageAuctionProgress(auctions);
 
@@ -76,11 +78,14 @@ export class AuctionMonitorApp {
     // Calculate and return the average auction progress
     if (auctions.length === 0) return 0;
 
-    const totalProgress = auctions.reduce(
-      (sum, auction) =>
-        sum + auction.currentHighestBidValue / auction.minimumRequiredAsk,
-      0
-    );
+    const totalProgress = auctions
+      // We need to filter because some auctions don't have minimum required ask
+      .filter((auction) => auction.minimumRequiredAsk)
+      .reduce(
+        (sum, auction) =>
+          sum + auction.currentHighestBidValue / auction.minimumRequiredAsk,
+        0
+      );
     return (totalProgress / auctions.length) * 100;
   }
 }
