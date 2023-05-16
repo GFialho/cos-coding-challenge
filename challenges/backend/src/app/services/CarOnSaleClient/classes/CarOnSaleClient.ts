@@ -60,7 +60,6 @@ export class CarOnSaleClient implements ICarOnSaleClient {
       // Preventing from looping
       // We will authenticate again and try just one more time
       // If the second iteraction fails then the process will be stoped
-
       if (error?.response?.status === 401 && !options?.blockLoop) {
         this.logger.warn(
           this._serviceName,
