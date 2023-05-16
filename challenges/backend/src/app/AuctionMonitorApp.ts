@@ -1,9 +1,10 @@
 import { inject, injectable } from "inversify";
 import { ILogger } from "./services/Logger/interface/ILogger";
 import { DependencyIdentifier } from "./DependencyIdentifiers";
-import { ICarOnSaleClient } from "./services/CarOnSaleClient/interface/ICarOnSaleClient";
-
-type Auction = any;
+import {
+  Auction,
+  ICarOnSaleClient,
+} from "./services/CarOnSaleClient/interface/ICarOnSaleClient";
 
 @injectable()
 export class AuctionMonitorApp {
@@ -54,7 +55,7 @@ export class AuctionMonitorApp {
 
       process.exit(0); // Exit with exit code 0 on successful execution
     } catch (error: any) {
-      console.log(error.response.data);
+      console.log(error?.response?.data);
       this.logger.error(`Error: ${error.message}`);
       process.exit(-1); // Exit with exit code -1 if there's an error
     }

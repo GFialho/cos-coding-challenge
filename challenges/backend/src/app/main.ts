@@ -6,6 +6,8 @@ import { AuctionMonitorApp } from "./AuctionMonitorApp";
 import * as dotenv from "dotenv";
 import { ICarOnSaleClient } from "./services/CarOnSaleClient/interface/ICarOnSaleClient";
 import { CarOnSaleClient } from "./services/CarOnSaleClient/classes/CarOnSaleClient";
+import { IRequest } from "./services/Request/interface/IRequest";
+import { RequestService } from "./services/Request/classes/Request";
 
 dotenv.config({ path: __dirname + "/.env" });
 
@@ -23,6 +25,9 @@ container.bind<ILogger>(DependencyIdentifier.LOGGER).to(Logger);
 container
   .bind<ICarOnSaleClient>(DependencyIdentifier.CAR_ON_SALE_CLIENT)
   .to(CarOnSaleClient);
+container
+  .bind<IRequest>(DependencyIdentifier.REQUEST_SERVICE)
+  .to(RequestService);
 
 /*
  * Inject all dependencies in the application & retrieve application instance.

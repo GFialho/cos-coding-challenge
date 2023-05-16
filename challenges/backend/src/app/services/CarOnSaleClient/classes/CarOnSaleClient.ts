@@ -1,9 +1,9 @@
 import { ICarOnSaleClient } from "../interface/ICarOnSaleClient";
 import { inject, injectable } from "inversify";
-
-import axios, { AxiosError, AxiosRequestConfig } from "axios";
 import { DependencyIdentifier } from "../../../DependencyIdentifiers";
 import { ILogger } from "../../Logger/interface/ILogger";
+import { AxiosError, AxiosRequestConfig } from "axios";
+import { RequestService } from "../../Request/classes/Request";
 
 @injectable()
 export class CarOnSaleClient implements ICarOnSaleClient {
@@ -12,7 +12,9 @@ export class CarOnSaleClient implements ICarOnSaleClient {
   private _serviceName: string;
 
   public constructor(
-    @inject(DependencyIdentifier.LOGGER) private logger: ILogger
+    @inject(DependencyIdentifier.LOGGER) private logger: ILogger,
+    @inject(DependencyIdentifier.REQUEST_SERVICE)
+    private requestService: RequestService
   ) {
     this._token = "";
     this._userId = "";
@@ -21,7 +23,7 @@ export class CarOnSaleClient implements ICarOnSaleClient {
 
   private async _authenticate(): Promise<void> {
     this.logger.log("Authenticating user...", this._serviceName);
-    const response = await axios({
+    const response = await this.requestService.sendRequest({
       url: `https://${process.env.API_BASE_URL}/v1/authentication/${process.env.API_USER_MAIL_ID}`,
       method: "put",
       data: {
@@ -29,7 +31,7 @@ export class CarOnSaleClient implements ICarOnSaleClient {
       },
     });
 
-    const { token, userId } = response.data;
+    const { token, userId } = response;
 
     this._token = token;
     this._userId = userId;
@@ -49,15 +51,16 @@ export class CarOnSaleClient implements ICarOnSaleClient {
         `Calling [${props.method?.toUpperCase()}]:${props.url}`,
         this._serviceName
       );
-      const response = await axios({
+      const response = await this.requestService.sendRequest({
         ...props,
         headers: { authtoken: this._token, userid: this._userId },
       });
-      return response.data;
+      return response;
     } catch (error: AxiosError | any) {
       // Preventing from looping
       // We will authenticate again and try just one more time
       // If the second iteraction fails then the process will be stoped
+
       if (error?.response?.status === 401 && !options?.blockLoop) {
         this.logger.warn(
           this._serviceName,
@@ -71,7 +74,7 @@ export class CarOnSaleClient implements ICarOnSaleClient {
     }
   }
 
-  public async getRunningAuctions({ filter }: { filter?: any }) {
+  public async getRunningAuctions({ filter }: { filter?: any } = {}) {
     const response = await this._call({
       url: `https://${process.env.API_BASE_URL}/v2/auction/buyer/`,
       method: "get",
