@@ -1,19 +1,26 @@
 import { ICarOnSaleClient } from "../interface/ICarOnSaleClient";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 
 import axios, { AxiosError, AxiosRequestConfig } from "axios";
+import { DependencyIdentifier } from "../../../DependencyIdentifiers";
+import { ILogger } from "../../Logger/interface/ILogger";
 
 @injectable()
 export class CarOnSaleClient implements ICarOnSaleClient {
   private _token: string;
   private _userId: string;
+  private _serviceName: string;
 
-  public constructor() {
+  public constructor(
+    @inject(DependencyIdentifier.LOGGER) private logger: ILogger
+  ) {
     this._token = "";
     this._userId = "";
+    this._serviceName = "CarOnSaleClient";
   }
 
   private async _authenticate(): Promise<void> {
+    this.logger.log("Authenticating user...", this._serviceName);
     const response = await axios({
       url: `https://${process.env.API_BASE_URL}/v1/authentication/${process.env.API_USER_MAIL_ID}`,
       method: "put",
@@ -26,6 +33,7 @@ export class CarOnSaleClient implements ICarOnSaleClient {
 
     this._token = token;
     this._userId = userId;
+    this.logger.log("User Authenticated.", this._serviceName);
 
     return;
   }
@@ -37,6 +45,10 @@ export class CarOnSaleClient implements ICarOnSaleClient {
     if (!this._userId || !this._token) await this._authenticate();
 
     try {
+      this.logger.log(
+        `Calling [${props.method?.toUpperCase()}]:${props.url}`,
+        this._serviceName
+      );
       const response = await axios({
         ...props,
         headers: { authtoken: this._token, userid: this._userId },
@@ -47,7 +59,10 @@ export class CarOnSaleClient implements ICarOnSaleClient {
       // We will authenticate again and try just one more time
       // If the second iteraction fails then the process will be stoped
       if (error?.response?.status === 401 && !options?.blockLoop) {
-        console.log("Token expired, authenticating user again...");
+        this.logger.warn(
+          this._serviceName,
+          "Token expired, authenticating user again..."
+        );
         await this._authenticate();
         return this._call({ ...props }, { blockLoop: true });
       }

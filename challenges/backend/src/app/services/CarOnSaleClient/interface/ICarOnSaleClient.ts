@@ -3,7 +3,7 @@
  */
 export interface ICarOnSaleClient {
   getRunningAuctions(
-    filter: any
+    filter?: any
   ): Promise<{ items: Auction[]; page: number; total: number }>;
 }
 

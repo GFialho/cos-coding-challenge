@@ -6,15 +6,15 @@ import "reflect-metadata";
 export class Logger implements ILogger {
   public constructor() {}
 
-  public log(message: string): void {
-    console.log(`[LOG]: ${message}`);
+  public log(message: string, serviceName?: string): void {
+    console.log(`[${serviceName || "Unnamed"}] [LOG]: ${message}`);
   }
 
-  public error(message: string): void {
-    console.error(`[ERROR]: ${message}`);
+  public error(message: string, serviceName?: string): void {
+    console.error(`[${serviceName || "Unnamed"}] [ERROR]: ${message}`);
   }
 
-  public warn(message: string): void {
-    console.error(`[WARN]: ${message}`);
+  public warn(message: string, serviceName?: string): void {
+    console.error(`[${serviceName || "Unnamed"}] [WARN]: ${message}`);
   }
 }

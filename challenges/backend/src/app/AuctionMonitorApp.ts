@@ -7,30 +7,50 @@ type Auction = any;
 
 @injectable()
 export class AuctionMonitorApp {
+  private _serviceName: string;
+
   public constructor(
     @inject(DependencyIdentifier.LOGGER) private logger: ILogger,
     @inject(DependencyIdentifier.CAR_ON_SALE_CLIENT)
     private carOnSaleClient: ICarOnSaleClient
-  ) {}
+  ) {
+    this._serviceName = "AuctionMonitorApp";
+  }
   public async start(): Promise<void> {
-    this.logger.log(`Auction Monitor started.`);
+    this.logger.log(`Auction Monitor started.`, this._serviceName);
 
     try {
       // Retrieve auctions
-      const data = await this.carOnSaleClient.getRunningAuctions({});
+      const { items: auctions } =
+        await this.carOnSaleClient.getRunningAuctions();
 
-      const { items: auctions } = data;
       // Display aggregated information
       const numberOfAuctions = auctions.length;
+
+      this.logger.log("Calculating average number of bids", this._serviceName);
       const averageNumberOfBids = this.calculateAverageNumberOfBids(auctions);
+
+      this.logger.log(
+        "Calculating average auction progress",
+        this._serviceName
+      );
       const averageAuctionProgress =
         this.calculateAverageAuctionProgress(auctions);
 
-      this.logger.log(`Number of auctions: ${numberOfAuctions}`);
       this.logger.log(
-        `Average number of bids on an auction: ${averageNumberOfBids}`
+        `Number of auctions: ${numberOfAuctions}`,
+        this._serviceName
       );
-      this.logger.log(`Average auction progress: ${averageAuctionProgress}`);
+      this.logger.log(
+        `Average number of bids on an auction: ${averageNumberOfBids.toFixed(
+          2
+        )}`,
+        this._serviceName
+      );
+      this.logger.log(
+        `Average auction progress: ${averageAuctionProgress.toFixed(2)}%`,
+        this._serviceName
+      );
 
       process.exit(0); // Exit with exit code 0 on successful execution
     } catch (error: any) {
@@ -42,12 +62,10 @@ export class AuctionMonitorApp {
 
   private calculateAverageNumberOfBids(auctions: Auction[]): number {
     // Calculate and return the average number of bids on auctions
-    if (auctions.length === 0) {
-      return 0;
-    }
+    if (auctions.length === 0) return 0;
 
     const totalBids = auctions.reduce(
-      (sum, auction) => sum + auction.numberOfBids,
+      (sum, auction) => sum + auction.numBids,
       0
     );
     return totalBids / auctions.length;
@@ -55,14 +73,13 @@ export class AuctionMonitorApp {
 
   private calculateAverageAuctionProgress(auctions: Auction[]): number {
     // Calculate and return the average auction progress
-    if (auctions.length === 0) {
-      return 0;
-    }
+    if (auctions.length === 0) return 0;
 
     const totalProgress = auctions.reduce(
-      (sum, auction) => sum + auction.auctionProgress,
+      (sum, auction) =>
+        sum + auction.currentHighestBidValue / auction.minimumRequiredAsk,
       0
     );
-    return totalProgress / auctions.length;
+    return (totalProgress / auctions.length) * 100;
   }
 }
