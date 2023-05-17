@@ -2,9 +2,11 @@
  * This service describes an interface to access auction data from the CarOnSale API.
  */
 export interface ICarOnSaleClient {
-  getRunningAuctions(
-    filter?: any
-  ): Promise<{ items: Auction[]; page: number; total: number }>;
+  getRunningAuctions({
+    filter,
+  }: {
+    filter?: IAuctionFilter;
+  }): Promise<{ items: Auction[]; page: number; total: number }>;
 }
 
 export interface Auction {
@@ -217,4 +219,307 @@ type AssociatedVehicle = {
   technicalState: any[];
   equipmentData: any[];
   equipmentHighlights: any[];
+};
+
+export interface IAuctionFilter {
+  description?: string;
+  ids?: number[];
+  uuids?: string[];
+  externalIds?: string[];
+  states?: {
+    undefined: boolean;
+  };
+  locationQuery?: string;
+  locationZipCodeQuery?: string;
+  vehicleSearchQuery?: IVehicleFilter;
+  owners?: IUuidFilter;
+  ownersBlacklist?: IUuidFilter;
+  internalCreators?: IUuidFilter;
+  watchingBuyers?: IUuidFilter;
+  highestBidders?: IUuidFilter;
+  sellerAccounts?: ISellerAccountFilter;
+  onlyForRegularBuyers?: IUuidFilter;
+  includeCountries?: (
+    | "??"
+    | "CH"
+    | "US"
+    | "AT"
+    | "BE"
+    | "BG"
+    | "CY"
+    | "CZ"
+    | "DE"
+    | "DK"
+    | "EE"
+    | "ES"
+    | "FI"
+    | "FR"
+    | "GB"
+    | "GR"
+    | "HR"
+    | "HU"
+    | "IE"
+    | "IT"
+    | "LI"
+    | "LT"
+    | "LU"
+    | "LV"
+    | "MT"
+    | "NL"
+    | "PL"
+    | "PT"
+    | "RO"
+    | "SE"
+    | "SI"
+    | "SK"
+    | "TR"
+  )[];
+  excludeCountries?: (
+    | "??"
+    | "CH"
+    | "US"
+    | "AT"
+    | "BE"
+    | "BG"
+    | "CY"
+    | "CZ"
+    | "DE"
+    | "DK"
+    | "EE"
+    | "ES"
+    | "FI"
+    | "FR"
+    | "GB"
+    | "GR"
+    | "HR"
+    | "HU"
+    | "IE"
+    | "IT"
+    | "LI"
+    | "LT"
+    | "LU"
+    | "LV"
+    | "MT"
+    | "NL"
+    | "PL"
+    | "PT"
+    | "RO"
+    | "SE"
+    | "SI"
+    | "SK"
+    | "TR"
+  )[];
+  endingTimeAfter?: string;
+  endingTimeBefore?: string;
+  startedAfter?: string;
+  startedBefore?: string;
+  purchaseConfirmedAfter?: string;
+  withInstantPurchaseActive?: boolean;
+  havingTransportationTaskBooked?: boolean;
+  isConfirmedBelowMinAsk?: boolean;
+  isMinAskReached?: boolean;
+  minAskFrom?: number;
+  minAskTo?: number;
+  minAskFromNet?: number;
+  minAskToNet?: number;
+  withoutReferencedInvoices?: boolean;
+  referencedInvoices?: any[];
+  needsReview?: boolean;
+  hasReviewComment?: boolean;
+  paymentProcesses?: (0 | 1 | 2)[];
+  hasTransfer?: boolean;
+  hasPayout?: boolean;
+  hasExpressPickup?: boolean;
+  isSuspectedToHaveBeenPaidInCash?: boolean;
+  hasMistakes?: boolean;
+  isLive?: boolean;
+  displayCrossBorderNetAuctions?: boolean;
+  buyerCountryCode?:
+    | "??"
+    | "CH"
+    | "US"
+    | "AT"
+    | "BE"
+    | "BG"
+    | "CY"
+    | "CZ"
+    | "DE"
+    | "DK"
+    | "EE"
+    | "ES"
+    | "FI"
+    | "FR"
+    | "GB"
+    | "GR"
+    | "HR"
+    | "HU"
+    | "IE"
+    | "IT"
+    | "LI"
+    | "LT"
+    | "LU"
+    | "LV"
+    | "MT"
+    | "NL"
+    | "PL"
+    | "PT"
+    | "RO"
+    | "SE"
+    | "SI"
+    | "SK"
+    | "TR";
+  hasGPR?: boolean;
+  hasThirdPartyVehiclePurchaseInvoice?: boolean;
+  thirdPartyVehiclePurchaseInvoiceReferences?: string[];
+  isTest?: boolean;
+  reachedMaxReinsertions?: boolean;
+  search?: string;
+  offset?: number;
+  limit?: number;
+  includeDeleted?: boolean;
+  sortBy?: {
+    field: string;
+    desc: boolean;
+    nullsLast: boolean;
+  }[];
+  distance?: {
+    radius: number;
+    lat: number;
+    lon: number;
+  };
+}
+type IUuidFilter = {
+  uuids: string[];
+};
+
+type IVehicleFilter = {
+  uuids?: string[];
+  vin?: string;
+  make?: string;
+  makes?: string[];
+  model?: string;
+  ezFrom?: string;
+  ezTo?: string;
+  ezMonth?: string;
+  ezYear?: string;
+  hpFrom?: number;
+  hpTo?: number;
+  mileageFrom?: number;
+  mileageTo?: number;
+  fuelTypes?: string[];
+  transmission?: string[];
+  headlights?: string[];
+  upholstery?: string[];
+  navigation?: string[];
+  sunRoof?: string[];
+  sportPackage?: string[];
+  vehicleHeater?: string[];
+  parkingAssistance?: string[];
+  categories?: string[];
+  datBaseModelRaw?: string[];
+  vatIdReportable?: boolean;
+  fullServiceHistory?: boolean;
+  readyToDrive?: string[];
+  hasDamages?: boolean;
+  hadAccident?: boolean;
+  isReimportedVehicle?: boolean;
+  doors?: string[];
+  search?: string;
+  offset?: number;
+  limit?: number;
+  includeDeleted?: boolean;
+  sortBy?: {
+    field: string;
+    desc: boolean;
+    nullsLast: boolean;
+  }[];
+};
+
+type ISellerAccountFilter = {
+  name?: string;
+  urlToHomePage?: string;
+  vatId?: string;
+  taxId?: string;
+  city?: string;
+  zipCode?: string;
+  countryCodes?: (
+    | "??"
+    | "CH"
+    | "US"
+    | "AT"
+    | "BE"
+    | "BG"
+    | "CY"
+    | "CZ"
+    | "DE"
+    | "DK"
+    | "EE"
+    | "ES"
+    | "FI"
+    | "FR"
+    | "GB"
+    | "GR"
+    | "HR"
+    | "HU"
+    | "IE"
+    | "IT"
+    | "LI"
+    | "LT"
+    | "LU"
+    | "LV"
+    | "MT"
+    | "NL"
+    | "PL"
+    | "PT"
+    | "RO"
+    | "SE"
+    | "SI"
+    | "SK"
+    | "TR"
+  )[];
+  uuids?: string[];
+  withParents?: {
+    description?: string;
+    uuids: string[];
+  };
+  withChildren?: {
+    description?: string;
+    uuids: string[];
+  };
+  havingParent?: boolean;
+  havingChildren?: boolean;
+  isKycChecked?: boolean;
+  isKycCheckPending?: boolean;
+  isKycCheckIncomplete?: boolean;
+  kycCheckExpiresSoon?: boolean;
+  invoicingMailAddresses?: any[];
+  hasConnectedPaymentAccount?: boolean;
+  isLegalEntity?: boolean;
+  havingFieldSalesManagerAssigned?: boolean;
+  havingInsideSalesManagerAssigned?: boolean;
+  assignedToFieldSalesManagers?: {
+    description?: string;
+    uuids: string[];
+  };
+  assignedToInsideSalesManagers?: {
+    description?: string;
+    uuids: string[];
+  };
+  hasTaxCertificate?: boolean;
+  hasKycCheckDueSoon?: boolean;
+  kycCheckedFrom?: string;
+  kycCheckedTo?: string;
+  taxCertificateUploadedFrom?: string;
+  taxCertificateUploadedTo?: string;
+  isStrategicPartner?: boolean;
+  sellerTypes?: number[];
+  search?: string;
+  offset?: number;
+  limit?: number;
+  includeDeleted?: boolean;
+  sortBy?: {
+    field: string;
+    desc: boolean;
+    nullsLast: boolean;
+  }[];
 };

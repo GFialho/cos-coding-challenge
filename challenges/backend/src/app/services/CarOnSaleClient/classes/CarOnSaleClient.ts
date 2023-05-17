@@ -1,4 +1,8 @@
-import { ICarOnSaleClient } from "../interface/ICarOnSaleClient";
+import {
+  Auction,
+  IAuctionFilter,
+  ICarOnSaleClient,
+} from "../interface/ICarOnSaleClient";
 import { inject, injectable } from "inversify";
 import { DependencyIdentifier } from "../../../DependencyIdentifiers";
 import { ILogger } from "../../Logger/interface/ILogger";
@@ -73,7 +77,13 @@ export class CarOnSaleClient implements ICarOnSaleClient {
     }
   }
 
-  public async getRunningAuctions({ filter }: { filter?: any } = {}) {
+  public async getRunningAuctions({
+    filter,
+  }: { filter?: IAuctionFilter } = {}): Promise<{
+    items: Auction[];
+    page: number;
+    total: number;
+  }> {
     let response = await this._call({
       url: `https://${process.env.API_BASE_URL}/v2/auction/buyer/`,
       method: "get",

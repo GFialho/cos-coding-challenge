@@ -44,12 +44,14 @@ export class AuctionMonitorApp {
         `Number of auctions: ${numberOfAuctions}`,
         this._serviceName
       );
+
       this.logger.log(
         `Average number of bids on an auction: ${averageNumberOfBids.toFixed(
           2
         )}`,
         this._serviceName
       );
+
       this.logger.log(
         `Average auction progress: ${averageAuctionProgress.toFixed(2)}%`,
         this._serviceName
@@ -57,7 +59,6 @@ export class AuctionMonitorApp {
 
       process.exit(0); // Exit with exit code 0 on successful execution
     } catch (error: any) {
-      console.log(error?.response?.data);
       this.logger.error(`Error: ${error.message}`);
       process.exit(-1); // Exit with exit code -1 if there's an error
     }
