@@ -79,14 +79,16 @@ export class AuctionMonitorApp {
     // Calculate and return the average auction progress
     if (auctions.length === 0) return 0;
 
-    const totalProgress = auctions
-      // We need to filter because some auctions don't have minimum required ask
-      .filter((auction) => auction.minimumRequiredAsk)
-      .reduce(
-        (sum, auction) =>
-          sum + auction.currentHighestBidValue / auction.minimumRequiredAsk,
-        0
-      );
-    return (totalProgress / auctions.length) * 100;
+    // We need to filter because some auctions don't have minimum required ask
+    const auctionsWithMinimumRequiredAsk = auctions.filter(
+      (auction) => auction.minimumRequiredAsk
+    );
+
+    const totalProgress = auctionsWithMinimumRequiredAsk.reduce(
+      (sum, auction) =>
+        sum + auction.currentHighestBidValue / auction.minimumRequiredAsk,
+      0
+    );
+    return (totalProgress / auctionsWithMinimumRequiredAsk.length) * 100;
   }
 }
