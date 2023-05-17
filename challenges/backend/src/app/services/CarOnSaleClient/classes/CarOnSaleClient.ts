@@ -80,8 +80,11 @@ export class CarOnSaleClient implements ICarOnSaleClient {
       params: { ...(filter && { filter: JSON.stringify(filter) }) },
     });
 
+    // Security measure to stop process from looping if API is broken
+    let maximumApiCalls = 0;
+
     // Get all records using paginated response
-    while (response.items.length < response.total) {
+    while (response.items.length < response.total && maximumApiCalls < 15) {
       const nextPageResponse = await this._call({
         url: `https://${process.env.API_BASE_URL}/v2/auction/buyer/`,
         method: "get",
@@ -96,6 +99,7 @@ export class CarOnSaleClient implements ICarOnSaleClient {
       });
 
       response.items = response.items.concat(nextPageResponse.items);
+      maximumApiCalls += 1;
     }
 
     return response;

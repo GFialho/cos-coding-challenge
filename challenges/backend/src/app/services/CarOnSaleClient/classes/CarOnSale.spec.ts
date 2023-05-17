@@ -180,7 +180,7 @@ describe("CarOnSaleClient", () => {
 
     it("should pass the filter parameter as a query parameter", async () => {
       const response = mockData;
-      const filter = { make: "Toyota", model: "Camry" };
+      const filter = { isLive: true, offset: 10, search: "abc" };
       requestServiceMock.sendRequest = (config) => {
         if (config?.url?.includes("/v1/authentication/"))
           return Promise.resolve({ token: "token-123", userId: "userid-123" });
@@ -190,13 +190,38 @@ describe("CarOnSaleClient", () => {
           authtoken: "token-123",
           userid: "userid-123",
         });
-        expect(config.params).to.deep.equal({ filter });
+        expect(config.params).to.deep.equal({ filter: JSON.stringify(filter) });
         return Promise.resolve(response);
       };
 
       const result = await carOnSaleClient.getRunningAuctions({ filter });
 
       expect(result).to.deep.equal(response);
+    });
+
+    it("should retrieve running auctions with pagination when calling getRunningAuctions", async () => {
+      const response = { items: [1, 2, 3], total: 10 };
+      let numberOfCalls = 0;
+
+      requestServiceMock.sendRequest = (config) => {
+        if (config?.url?.includes("/v1/authentication/"))
+          return Promise.resolve({ token: "token-123", userId: "userid-123" });
+
+        // Checking if credentials are set correctly
+        expect(config.headers).to.deep.equal({
+          authtoken: "token-123",
+          userid: "userid-123",
+        });
+
+        numberOfCalls += 1;
+
+        return Promise.resolve(response);
+      };
+
+      const result = await carOnSaleClient.getRunningAuctions();
+
+      expect(numberOfCalls).to.equal(3);
+      expect(result.items).to.deep.equal([1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3]);
     });
   });
 });
